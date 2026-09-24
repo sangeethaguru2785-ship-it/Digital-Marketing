@@ -380,6 +380,25 @@
       e.stopPropagation();
 
       let valid = true;
+      const nameField = contactForm.querySelector("#cfName");
+      if (nameField) {
+        const nameCheck = window.SDName
+          ? window.SDName.validate(nameField.value)
+          : { valid: /^[A-Za-z]+(?:\s+[A-Za-z]+)*$/.test(nameField.value.trim()), message: "Name can only contain letters (A–Z, a–z) and spaces." };
+        const fb = nameField.parentElement.querySelector(".invalid-feedback");
+        if (!nameCheck.valid) {
+          valid = false;
+          nameField.classList.add("is-invalid");
+          if (fb) {
+            fb.textContent = nameCheck.message;
+            fb.style.display = "block";
+          }
+        } else {
+          nameField.classList.remove("is-invalid");
+          if (fb) fb.style.display = "none";
+        }
+      }
+
       const emailField = contactForm.querySelector("#cfEmail");
       if (emailField) {
         const emailCheck = window.SDEmail
@@ -401,12 +420,18 @@
 
       const inputs = contactForm.querySelectorAll("[required]");
       inputs.forEach(function (input) {
-        if (input === emailField) return;
+        if (input === emailField || input === nameField) return;
+        const fb = input.parentElement.querySelector(".invalid-feedback");
         if (!input.value.trim()) {
           valid = false;
           input.classList.add("is-invalid");
+          if (fb) {
+            fb.textContent = input.tagName === "SELECT" ? "Please select an option." : "This field is required.";
+            fb.style.display = "block";
+          }
         } else {
           input.classList.remove("is-invalid");
+          if (fb) fb.style.display = "none";
         }
       });
 
@@ -418,11 +443,7 @@
         return;
       }
 
-      if (formNote) {
-        formNote.style.color = "#5D6F22";
-        formNote.textContent = "Thank you! Your message has been sent. We'll get back to you within 24 hours.";
-      }
-      contactForm.reset();
+      window.location.href = "404.html";
     });
   }
 
@@ -444,11 +465,7 @@
         }
         return;
       }
-      if (newsletterNote) {
-        newsletterNote.style.color = "#C7C54A";
-        newsletterNote.textContent = "Subscribed! Welcome to the list.";
-      }
-      newsletterForm.reset();
+      window.location.href = "404.html";
     });
   }
 

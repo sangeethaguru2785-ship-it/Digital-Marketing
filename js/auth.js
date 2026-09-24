@@ -105,6 +105,19 @@
     return { valid: FALLBACK_EMAIL_RE.test(v), message: 'Enter a valid email address.' };
   }
 
+  function validateName(value) {
+    var v = String(value || '').trim();
+    if (window.SDName) {
+      return window.SDName.validate(v);
+    }
+    if (!v) return { valid: false, message: 'Full name is required.' };
+    if (v.length < 2) return { valid: false, message: 'Name must be at least 2 characters.' };
+    return {
+      valid: /^[A-Za-z]+(?:\s+[A-Za-z]+)*$/.test(v),
+      message: 'Name can only contain letters (A–Z, a–z) and spaces.'
+    };
+  }
+
   function validatePassword(value) {
     var v = String(value || '');
     if (window.SDPassword) {
@@ -254,11 +267,9 @@
       var confirm = qs('#signupConfirm');
       var ok = true;
 
-      if (!name.value.trim()) {
-        setError(name, 'Full name is required.');
-        ok = false;
-      } else if (name.value.trim().length < 2) {
-        setError(name, 'Name must be at least 2 characters.');
+      var checkName = validateName(name.value);
+      if (!checkName.valid) {
+        setError(name, checkName.message);
         ok = false;
       }
 

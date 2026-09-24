@@ -364,6 +364,41 @@
   guardSaveClick("#saveProfileBtn", "#agencyEmail", "#agencyEmailMsg");
   guardSaveClick("#saveContactBtn", "#cEmail", "#cEmailMsg");
 
+  function guardNameSave(inputSel) {
+    var input = document.querySelector(inputSel);
+    if (!input) return;
+
+    input.addEventListener("input", function () {
+      input.classList.remove("is-invalid");
+      var fb = document.querySelector("#cNameMsg");
+      if (fb) fb.style.display = "none";
+    });
+  }
+
+  document.querySelectorAll("#saveContactBtn").forEach(function (btn) {
+    var input = document.querySelector("#cName");
+    if (!input) return;
+    var fb = document.querySelector("#cNameMsg");
+    btn.addEventListener("click", function (e) {
+      var check = window.SDName
+        ? window.SDName.validate(input.value)
+        : { valid: /^[A-Za-z]+(?:\s+[A-Za-z]+)*$/.test(input.value.trim()), message: "Name can only contain letters (A–Z, a–z) and spaces." };
+      if (check.valid) {
+        input.classList.remove("is-invalid");
+        if (fb) fb.style.display = "none";
+        return;
+      }
+      e.preventDefault();
+      e.stopPropagation();
+      input.classList.add("is-invalid");
+      if (fb) {
+        fb.textContent = check.message;
+        fb.style.display = "block";
+      }
+    });
+    guardNameSave("#cName");
+  });
+
   document.querySelectorAll("#updatePwdBtn").forEach(function (btn) {
     var form = btn.closest(".dash-form");
     var input = form ? form.querySelector("input[type='password']") : null;
